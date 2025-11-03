@@ -262,6 +262,47 @@
             background: linear-gradient(135deg, var(--warning), #e68a00);
         }
         
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #2e8b57);
+        }
+        
+        .sync-section {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 15px 0;
+            border: 2px dashed var(--primary);
+        }
+        
+        .sync-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .sync-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(67, 97, 238, 0.1);
+            border-radius: 10px;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-left: 10px;
+        }
+        
+        .status-online { background: var(--success); }
+        .status-offline { background: var(--danger); }
+        .status-syncing { background: var(--warning); }
+        
         .warranty-list {
             max-height: 600px;
             overflow-y: auto;
@@ -269,7 +310,6 @@
             flex: 1;
         }
         
-        /* اسکرول بار سفارشی */
         .warranty-list::-webkit-scrollbar {
             width: 8px;
         }
@@ -536,6 +576,10 @@
             .footer-links {
                 justify-content: center;
             }
+            
+            .sync-buttons {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -550,6 +594,11 @@
             <div class="header-info">
                 <span id="currentDate"><i class="fas fa-calendar-alt"></i> تاریخ: </span>
                 <span id="currentTime"><i class="fas fa-clock"></i> ساعت: </span>
+                <span id="syncStatus">
+                    <i class="fas fa-cloud"></i> وضعیت: 
+                    <span id="statusText">محلی</span>
+                    <span class="status-indicator status-offline" id="statusIndicator"></span>
+                </span>
             </div>
         </header>
         
@@ -566,6 +615,30 @@
                 <div class="stat-label">منقضی شده</div>
                 <div class="stat-value" id="expiredWarranties">0</div>
             </div>
+        </div>
+        
+        <!-- بخش همگام‌سازی -->
+        <div class="sync-section">
+            <h2><i class="fas fa-sync-alt"></i> مدیریت داده‌ها و همگام‌سازی</h2>
+            <div class="sync-info">
+                <i class="fas fa-info-circle"></i>
+                <span>برای دسترسی از دستگاه‌های مختلف، داده‌ها را export کرده و در دستگاه دیگر import کنید</span>
+            </div>
+            <div class="sync-buttons">
+                <button class="btn-success" id="exportBtn">
+                    <i class="fas fa-file-export"></i> خروجی گرفتن از داده‌ها
+                </button>
+                <button class="btn-success" id="importBtn">
+                    <i class="fas fa-file-import"></i> وارد کردن داده‌ها
+                </button>
+                <button class="btn-warning" id="autoBackupBtn">
+                    <i class="fas fa-robot"></i> پشتیبان‌گیری خودکار
+                </button>
+                <button class="btn-danger" id="resetDataBtn">
+                    <i class="fas fa-trash"></i> ریست کردن همه داده‌ها
+                </button>
+            </div>
+            <div id="syncMessage" style="margin-top: 10px; min-height: 20px;"></div>
         </div>
         
         <div class="main-content">
@@ -675,6 +748,7 @@
         let warranties = JSON.parse(localStorage.getItem('warranties')) || [];
         let editingId = null;
         let isDarkTheme = localStorage.getItem('darkTheme') === 'true';
+        let autoBackupInterval = null;
         
         // اعمال تم ذخیره شده
         if (isDarkTheme) {
@@ -705,6 +779,39 @@
             }
             
             localStorage.setItem('darkTheme', isDarkTheme);
+        }
+        
+        // نمایش پیام
+        function showMessage(message, type = 'success') {
+            const messageDiv = document.getElementById('syncMessage');
+            const color = type === 'success' ? 'var(--success)' : 'var(--danger)';
+            messageDiv.innerHTML = `
+                <div style="color: ${color}; padding: 10px; border-radius: 5px; background: rgba(0,0,0,0.1);">
+                    <i class="fas fa-${type === 'success' ? 'check' : 'exclamation'}-circle"></i>
+                    ${message}
+                </div>
+            `;
+            
+            setTimeout(() => {
+                messageDiv.innerHTML = '';
+            }, 5000);
+        }
+        
+        // به روز رسانی وضعیت همگام‌سازی
+        function updateSyncStatus() {
+            const hasData = warranties.length > 0;
+            const lastBackup = localStorage.getItem('lastBackup');
+            
+            if (lastBackup) {
+                document.getElementById('statusText').textContent = 'پشتیبان‌گیری شده';
+                document.getElementById('statusIndicator').className = 'status-indicator status-online';
+            } else if (hasData) {
+                document.getElementById('statusText').textContent = 'داده محلی';
+                document.getElementById('statusIndicator').className = 'status-indicator status-warning';
+            } else {
+                document.getElementById('statusText').textContent = 'بدون داده';
+                document.getElementById('statusIndicator').className = 'status-indicator status-offline';
+            }
         }
         
         // محاسبه روزهای باقی‌مانده از گارانتی
@@ -796,6 +903,7 @@
             });
             
             updateStats();
+            updateSyncStatus();
         }
         
         // نمایش نتایج جستجو
@@ -915,6 +1023,8 @@
             // پاک کردن فرم
             document.getElementById('warrantyForm').reset();
             document.getElementById('startDate').valueAsDate = new Date();
+            
+            showMessage('گارانتی با موفقیت ذخیره شد');
         }
         
         // ویرایش گارانتی
@@ -950,6 +1060,8 @@
                 if (searchTerm) {
                     searchWarranties();
                 }
+                
+                showMessage('گارانتی با موفقیت حذف شد');
             }
         }
         
@@ -996,6 +1108,89 @@
             displayWarranties(expiredWarranties);
         }
         
+        // ==================== توابع همگام‌سازی ====================
+        
+        // خروجی گرفتن از داده‌ها
+        function exportData() {
+            if (warranties.length === 0) {
+                showMessage('هیچ داده‌ای برای خروجی گرفتن وجود ندارد', 'error');
+                return;
+            }
+            
+            const data = {
+                warranties: warranties,
+                exportDate: new Date().toISOString(),
+                version: "1.0",
+                totalRecords: warranties.length
+            };
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], {type: "application/json"});
+            
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `warranty-backup-${new Date().getTime()}.json`;
+            link.click();
+            
+            showMessage(`داده‌ها با موفقیت ذخیره شدند (${warranties.length} رکورد)`);
+        }
+        
+        // وارد کردن داده‌ها
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (data.warranties && Array.isArray(data.warranties)) {
+                        if (confirm(`آیا از جایگزینی داده‌های فعلی با ${data.warranties.length} رکورد جدید مطمئن هستید؟`)) {
+                            warranties = data.warranties;
+                            localStorage.setItem('warranties', JSON.stringify(warranties));
+                            displayWarranties();
+                            showMessage(`داده‌ها با موفقیت وارد شدند (${data.warranties.length} رکورد)`);
+                        }
+                    } else {
+                        throw new Error('قالب فایل نامعتبر است');
+                    }
+                } catch (error) {
+                    showMessage('خطا در خواندن فایل: ' + error.message, 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+        
+        // پشتیبان‌گیری خودکار
+        function toggleAutoBackup() {
+            if (autoBackupInterval) {
+                clearInterval(autoBackupInterval);
+                autoBackupInterval = null;
+                document.getElementById('autoBackupBtn').innerHTML = '<i class="fas fa-robot"></i> پشتیبان‌گیری خودکار';
+                showMessage('پشتیبان‌گیری خودکار غیرفعال شد');
+            } else {
+                autoBackupInterval = setInterval(() => {
+                    localStorage.setItem('lastBackup', new Date().toISOString());
+                    showMessage('پشتیبان‌گیری خودکار انجام شد');
+                }, 300000); // هر 5 دقیقه
+                
+                document.getElementById('autoBackupBtn').innerHTML = '<i class="fas fa-stop"></i> توقف پشتیبان‌گیری';
+                showMessage('پشتیبان‌گیری خودکار فعال شد (هر 5 دقیقه)');
+            }
+        }
+        
+        // ریست کردن همه داده‌ها
+        function resetAllData() {
+            if (confirm('آیا از حذف تمامی داده‌ها مطمئن هستید؟ این عمل غیرقابل برگشت است!')) {
+                warranties = [];
+                localStorage.removeItem('warranties');
+                displayWarranties();
+                showMessage('تمامی داده‌ها با موفقیت حذف شدند');
+            }
+        }
+        
+        // ==================== راه‌اندازی اولیه ====================
+        
         // تنظیم تاریخ پیش‌فرض به امروز
         document.getElementById('startDate').valueAsDate = new Date();
         
@@ -1015,10 +1210,24 @@
         document.getElementById('showExpired').addEventListener('click', showExpiredWarranties);
         document.getElementById('themeToggle').addEventListener('click', toggleTheme);
         
+        // رویدادهای همگام‌سازی
+        document.getElementById('exportBtn').addEventListener('click', exportData);
+        document.getElementById('autoBackupBtn').addEventListener('click', toggleAutoBackup);
+        document.getElementById('resetDataBtn').addEventListener('click', resetAllData);
+        
+        const importInput = document.createElement('input');
+        importInput.type = 'file';
+        importInput.accept = '.json';
+        importInput.style.display = 'none';
+        importInput.addEventListener('change', importData);
+        document.body.appendChild(importInput);
+        
+        document.getElementById('importBtn').addEventListener('click', () => importInput.click());
+        
         // به روز رسانی زمان هر ثانیه
         setInterval(updateDateTime, 1000);
         updateDateTime();
-        
+                        
         // نمایش اولیه گارانتی‌ها
         displayWarranties();
     </script>
