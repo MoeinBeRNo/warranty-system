@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سیستم مدیریت گارانتی | BeRNo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lalezar&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #4cc9f0;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4bb543;
+            --warning: #ff9e00;
+            --danger: #dc3545;
+            --gray: #6c757d;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --text-color: #212529;
+            --bg-color: #f8f9fa;
+            --header-bg: #ffffff;
+            --input-bg: #ffffff;
+            --border-color: #e0e0e0;
+            --footer-bg: #2d3748;
+            --footer-text: #e2e8f0;
+        }
+        
+        .dark-theme {
+            --primary: #6d8eff;
+            --secondary: #5e35b1;
+            --accent: #4cc9f0;
+            --light: #2d3748;
+            --dark: #e2e8f0;
+            --success: #68d391;
+            --warning: #faf089;
+            --danger: #fc8181;
+            --gray: #a0aec0;
+            --card-bg: rgba(45, 55, 72, 0.9);
+            --text-color: #e2e8f0;
+            --bg-color: #1a202c;
+            --header-bg: #2d3748;
+            --input-bg: #2d3748;
+            --border-color: #4a5568;
+            --footer-bg: #1a202c;
+            --footer-text: #a0aec0;
+        }
+        
+        body {
+            font-family: 'Lalezar', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--text-color);
+            padding: 20px;
+            line-height: 1.6;
+            min-height: 100vh;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        body.dark-theme {
+            background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 25px;
+            background: var(--header-bg);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+        }
+        
+        h1 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+            font-weight: bold;
+        }
+        
+        .header-info {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            margin-top: 15px;
+            font-size: 1.1rem;
+        }
+        
+        .header-info span {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(67, 97, 238, 0.1);
+            padding: 8px 15px;
+            border-radius: 50px;
+            color: var(--primary);
+        }
+        
+        .theme-toggle {
+            position: absolute;
+            left: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s;
+        }
+        
+        .theme-toggle:hover {
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 25px;
+            margin-bottom: 30px;
+            flex: 1;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .theme-toggle {
+                position: relative;
+                left: 0;
+                top: 0;
+                transform: none;
+                margin: 10px auto;
+            }
+            
+            .header-info {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+        
+        .card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(67, 97, 238, 0.2);
+            font-weight: bold;
+        }
+        
+        .form-group {
+            margin-bottom: 18px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-color);
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            font-family: 'Lalezar', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+        
+        button {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: 'Lalezar', sans-serif;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+            font-weight: bold;
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(67, 97, 238, 0.4);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), #c82333);
+        }
+        
+        .btn-danger:hover {
+            box-shadow: 0 7px 20px rgba(220, 53, 69, 0.4);
+        }
+        
+        .btn-edit {
+            background: linear-gradient(135deg, var(--accent), #0096c7);
+        }
+        
+        .btn-edit:hover {
+            box-shadow: 0 7px 20px rgba(76, 201, 240, 0.4);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning), #e68a00);
+        }
+        
+        .warranty-list {
+            max-height: 600px;
+            overflow-y: auto;
+            padding-right: 10px;
+            flex: 1;
+        }
+        
+        /* اسکرول بار سفارشی */
+        .warranty-list::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .warranty-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        .warranty-list::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+        
+        .dark-theme .warranty-list::-webkit-scrollbar-track {
+            background: #2d3748;
+        }
+        
+        .warranty-item {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-right: 5px solid var(--primary);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+        }
+        
+        .warranty-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .warranty-item.expiring {
+            border-right-color: var(--warning);
+        }
+        
+        .warranty-item.expired {
+            border-right-color: var(--danger);
+        }
+        
+        .warranty-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .warranty-title {
+            font-size: 1.3rem;
+            color: var(--primary);
+            font-weight: bold;
+        }
+        
+        .warranty-days {
+            font-size: 1rem;
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: rgba(67, 97, 238, 0.1);
+            font-weight: bold;
+        }
+        
+        .days-normal {
+            color: var(--success);
+        }
+        
+        .days-warning {
+            color: var(--warning);
+        }
+        
+        .days-danger {
+            color: var(--danger);
+        }
+        
+        .warranty-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .warranty-details div {
+            font-weight: normal;
+        }
+        
+        .warranty-cost {
+            background: rgba(75, 181, 67, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-weight: bold;
+            color: var(--success);
+        }
+        
+        .warranty-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .warranty-actions button {
+            flex: 1;
+            padding: 10px;
+            font-size: 0.95rem;
+            margin-top: 0;
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .search-box input {
+            flex: 1;
+        }
+        
+        .search-box button {
+            width: auto;
+            padding: 12px 20px;
+        }
+        
+        .search-results {
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #ced4da;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+        
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        
+        .cost-input {
+            position: relative;
+        }
+        
+        .cost-input::after {
+            content: "تومان";
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+            background: var(--input-bg);
+            padding: 0 8px;
+        }
+        
+        .cost-input input {
+            padding-left: 70px;
+        }
+        
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .filter-buttons button {
+            flex: 1;
+            margin-top: 0;
+            padding: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .service-details {
+            font-weight: normal !important;
+        }
+        
+        footer {
+            background: var(--footer-bg);
+            color: var(--footer-text);
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .footer-logo i {
+            color: var(--primary);
+        }
+        
+        .footer-text {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .footer-links a {
+            color: var(--footer-text);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+        
+        @media (max-width: 768px) {
+            .footer-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .footer-links {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body class="light-theme">
+    <div class="container">
+        <header>
+            <button class="theme-toggle" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+            <h1><i class="fas fa-shield-alt"></i> سیستم مدیریت گارانتی</h1>
+            <p>مدیریت حرفه‌ای گارانتی‌های ارائه شده به مشتریان</p>
+            <div class="header-info">
+                <span id="currentDate"><i class="fas fa-calendar-alt"></i> تاریخ: </span>
+                <span id="currentTime"><i class="fas fa-clock"></i> ساعت: </span>
+            </div>
+        </header>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-label">کل گارانتی‌ها</div>
+                <div class="stat-value" id="totalWarranties">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">در حال اجرا</div>
+                <div class="stat-value" id="activeWarranties">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">منقضی شده</div>
+                <div class="stat-value" id="expiredWarranties">0</div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="left-column">
+                <div class="card">
+                    <h2><i class="fas fa-plus-circle"></i> افزودن گارانتی جدید</h2>
+                    <form id="warrantyForm">
+                        <div class="form-group">
+                            <label for="customerName">نام مشتری</label>
+                            <input type="text" id="customerName" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="productName">نام محصول</label>
+                            <input type="text" id="productName" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="serialNumber">شماره سریال</label>
+                            <input type="text" id="serialNumber" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="warrantyCode">کد گارانتی</label>
+                            <input type="text" id="warrantyCode" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="serviceDetails">خدمات انجام شده</label>
+                            <textarea id="serviceDetails" rows="3"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="warrantyPeriod">مدت گارانتی</label>
+                            <select id="warrantyPeriod">
+                                <option value="1">1 ماه</option>
+                                <option value="3">3 ماه</option>
+                                <option value="6">6 ماه</option>
+                                <option value="12" selected>12 ماه</option>
+                                <option value="18">18 ماه</option>
+                                <option value="24">24 ماه</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="finalCost">هزینه نهایی دریافت شده</label>
+                            <div class="cost-input">
+                                <input type="number" id="finalCost" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="startDate">تاریخ شروع گارانتی</label>
+                            <input type="date" id="startDate" required>
+                        </div>
+                        
+                        <button type="submit" id="submitBtn"><i class="fas fa-save"></i> ذخیره گارانتی</button>
+                    </form>
+                </div>
+                
+                <div class="card">
+                    <h2><i class="fas fa-search"></i> جستجوی گارانتی</h2>
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="جستجو بر اساس نام مشتری، محصول، سریال یا کد گارانتی...">
+                        <button id="searchBtn"><i class="fas fa-search"></i> جستجو</button>
+                    </div>
+                    <div class="filter-buttons">
+                        <button class="btn-warning" id="showExpiring"><i class="fas fa-exclamation-triangle"></i> نزدیک به انقضا</button>
+                        <button class="btn-danger" id="showExpired"><i class="fas fa-times-circle"></i> منقضی شده</button>
+                    </div>
+                    <div class="search-results" id="searchResults">
+                        <!-- نتایج جستجو اینجا نمایش داده می‌شوند -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="right-column">
+                <div class="card">
+                    <h2><i class="fas fa-list"></i> فهرست گارانتی‌ها</h2>
+                    <div class="warranty-list" id="warrantyList">
+                        <!-- گارانتی‌ها اینجا نمایش داده می‌شوند -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>BeRNo Personal Branding</span>
+                </div>
+                <div class="footer-text">
+                    © 1404 کلیه حقوق این نرم‌افزار محفوظ و متعلق به BeRNo Personal Branding می‌باشد. v 1.40
+                </div>
+                <div class="footer-links">
+                    <a href="#"><i class="fas fa-info-circle"></i> درباره ما</a>
+                    <a href="#"><i class="fas fa-envelope"></i> تماس با ما</a>
+                    <a href="#"><i class="fas fa-shield-alt"></i> حریم خصوصی</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // متغیرهای جهانی
+        let warranties = JSON.parse(localStorage.getItem('warranties')) || [];
+        let editingId = null;
+        let isDarkTheme = localStorage.getItem('darkTheme') === 'true';
+        
+        // اعمال تم ذخیره شده
+        if (isDarkTheme) {
+            document.body.classList.add('dark-theme');
+            document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+        }
+        
+        // به روز رسانی تاریخ و زمان
+        function updateDateTime() {
+            const now = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            const dateString = now.toLocaleDateString('fa-IR', options);
+            const timeString = now.toLocaleTimeString('fa-IR');
+            
+            document.getElementById('currentDate').innerHTML = `<i class="fas fa-calendar-alt"></i> تاریخ: ${dateString}`;
+            document.getElementById('currentTime').innerHTML = `<i class="fas fa-clock"></i> ساعت: ${timeString}`;
+        }
+        
+        // تغییر تم
+        function toggleTheme() {
+            isDarkTheme = !isDarkTheme;
+            document.body.classList.toggle('dark-theme', isDarkTheme);
+            
+            if (isDarkTheme) {
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            } else {
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-moon"></i>';
+            }
+            
+            localStorage.setItem('darkTheme', isDarkTheme);
+        }
+        
+        // محاسبه روزهای باقی‌مانده از گارانتی
+        function calculateRemainingDays(startDate, warrantyMonths) {
+            const start = new Date(startDate);
+            const end = new Date(start);
+            end.setMonth(start.getMonth() + parseInt(warrantyMonths));
+            const today = new Date();
+            
+            const diffTime = end - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            return diffDays > 0 ? diffDays : 0;
+        }
+        
+        // تولید شناسه منحصر به فرد
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+        
+        // به روز رسانی آمار
+        function updateStats() {
+            const total = warranties.length;
+            const active = warranties.filter(w => calculateRemainingDays(w.startDate, w.warrantyPeriod) > 0).length;
+            const expired = total - active;
+            
+            document.getElementById('totalWarranties').textContent = total;
+            document.getElementById('activeWarranties').textContent = active;
+            document.getElementById('expiredWarranties').textContent = expired;
+        }
+        
+        // نمایش گارانتی‌ها در لیست
+        function displayWarranties(warrantiesToShow = warranties) {
+            const container = document.getElementById('warrantyList');
+            
+            if (warrantiesToShow.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <p>هیچ گارانتی یافت نشد</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            warrantiesToShow.forEach(warranty => {
+                const remainingDays = calculateRemainingDays(warranty.startDate, warranty.warrantyPeriod);
+                let daysClass = 'days-normal';
+                let itemClass = '';
+                
+                if (remainingDays <= 30 && remainingDays > 0) {
+                    daysClass = 'days-warning';
+                    itemClass = 'expiring';
+                } else if (remainingDays === 0) {
+                    daysClass = 'days-danger';
+                    itemClass = 'expired';
+                }
+                
+                const warrantyElement = document.createElement('div');
+                warrantyElement.className = `warranty-item ${itemClass}`;
+                warrantyElement.innerHTML = `
+                    <div class="warranty-header">
+                        <div class="warranty-title">${warranty.productName}</div>
+                        <div class="warranty-days ${daysClass}">${remainingDays} روز باقی مانده</div>
+                    </div>
+                    <div class="warranty-details">
+                        <div><strong>مشتری:</strong> ${warranty.customerName}</div>
+                        <div><strong>سریال:</strong> ${warranty.serialNumber}</div>
+                        <div><strong>کد گارانتی:</strong> ${warranty.warrantyCode}</div>
+                        <div><strong>مدت:</strong> ${warranty.warrantyPeriod} ماه</div>
+                    </div>
+                    <div class="service-details"><strong>خدمات:</strong> ${warranty.serviceDetails}</div>
+                    <div class="warranty-cost">
+                        <i class="fas fa-money-bill-wave"></i> هزینه دریافت شده: ${Number(warranty.finalCost).toLocaleString()} تومان
+                    </div>
+                    <div class="warranty-actions">
+                        <button class="btn-edit" onclick="editWarranty('${warranty.id}')">
+                            <i class="fas fa-edit"></i> ویرایش
+                        </button>
+                        <button class="btn-danger" onclick="deleteWarranty('${warranty.id}')">
+                            <i class="fas fa-trash-alt"></i> حذف
+                        </button>
+                    </div>
+                `;
+                
+                container.appendChild(warrantyElement);
+            });
+            
+            updateStats();
+        }
+        
+        // نمایش نتایج جستجو
+        function displaySearchResults(warrantiesToShow) {
+            const container = document.getElementById('searchResults');
+            
+            if (warrantiesToShow.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-search"></i>
+                        <p>هیچ گارانتی مطابق با جستجوی شما یافت نشد</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = '<h3>نتایج جستجو:</h3>';
+            
+            warrantiesToShow.forEach(warranty => {
+                const remainingDays = calculateRemainingDays(warranty.startDate, warranty.warrantyPeriod);
+                let daysClass = 'days-normal';
+                let itemClass = '';
+                
+                if (remainingDays <= 30 && remainingDays > 0) {
+                    daysClass = 'days-warning';
+                    itemClass = 'expiring';
+                } else if (remainingDays === 0) {
+                    daysClass = 'days-danger';
+                    itemClass = 'expired';
+                }
+                
+                const warrantyElement = document.createElement('div');
+                warrantyElement.className = `warranty-item ${itemClass}`;
+                warrantyElement.innerHTML = `
+                    <div class="warranty-header">
+                        <div class="warranty-title">${warranty.productName}</div>
+                        <div class="warranty-days ${daysClass}">${remainingDays} روز باقی مانده</div>
+                    </div>
+                    <div class="warranty-details">
+                        <div><strong>مشتری:</strong> ${warranty.customerName}</div>
+                        <div><strong>سریال:</strong> ${warranty.serialNumber}</div>
+                        <div><strong>کد گارانتی:</strong> ${warranty.warrantyCode}</div>
+                        <div><strong>مدت:</strong> ${warranty.warrantyPeriod} ماه</div>
+                    </div>
+                    <div class="service-details"><strong>خدمات:</strong> ${warranty.serviceDetails}</div>
+                    <div class="warranty-cost">
+                        <i class="fas fa-money-bill-wave"></i> هزینه دریافت شده: ${Number(warranty.finalCost).toLocaleString()} تومان
+                    </div>
+                    <div class="warranty-actions">
+                        <button class="btn-edit" onclick="editWarranty('${warranty.id}')">
+                            <i class="fas fa-edit"></i> ویرایش
+                        </button>
+                        <button class="btn-danger" onclick="deleteWarranty('${warranty.id}')">
+                            <i class="fas fa-trash-alt"></i> حذف
+                        </button>
+                    </div>
+                `;
+                
+                container.appendChild(warrantyElement);
+            });
+        }
+        
+        // ذخیره گارانتی
+        function saveWarranty(event) {
+            event.preventDefault();
+            
+            const customerName = document.getElementById('customerName').value;
+            const productName = document.getElementById('productName').value;
+            const serialNumber = document.getElementById('serialNumber').value;
+            const warrantyCode = document.getElementById('warrantyCode').value;
+            const serviceDetails = document.getElementById('serviceDetails').value;
+            const warrantyPeriod = document.getElementById('warrantyPeriod').value;
+            const finalCost = document.getElementById('finalCost').value;
+            const startDate = document.getElementById('startDate').value;
+            
+            if (editingId) {
+                // ویرایش گارانتی موجود
+                const index = warranties.findIndex(w => w.id === editingId);
+                if (index !== -1) {
+                    warranties[index] = {
+                        id: editingId,
+                        customerName,
+                        productName,
+                        serialNumber,
+                        warrantyCode,
+                        serviceDetails,
+                        warrantyPeriod,
+                        finalCost,
+                        startDate
+                    };
+                }
+                editingId = null;
+                document.getElementById('submitBtn').innerHTML = '<i class="fas fa-save"></i> ذخیره گارانتی';
+            } else {
+                // افزودن گارانتی جدید
+                const newWarranty = {
+                    id: generateId(),
+                    customerName,
+                    productName,
+                    serialNumber,
+                    warrantyCode,
+                    serviceDetails,
+                    warrantyPeriod,
+                    finalCost,
+                    startDate
+                };
+                
+                warranties.push(newWarranty);
+            }
+            
+            // ذخیره در localStorage
+            localStorage.setItem('warranties', JSON.stringify(warranties));
+            
+            // نمایش مجدد لیست
+            displayWarranties();
+            
+            // پاک کردن فرم
+            document.getElementById('warrantyForm').reset();
+            document.getElementById('startDate').valueAsDate = new Date();
+        }
+        
+        // ویرایش گارانتی
+        function editWarranty(id) {
+            const warranty = warranties.find(w => w.id === id);
+            if (!warranty) return;
+            
+            document.getElementById('customerName').value = warranty.customerName;
+            document.getElementById('productName').value = warranty.productName;
+            document.getElementById('serialNumber').value = warranty.serialNumber;
+            document.getElementById('warrantyCode').value = warranty.warrantyCode;
+            document.getElementById('serviceDetails').value = warranty.serviceDetails;
+            document.getElementById('warrantyPeriod').value = warranty.warrantyPeriod;
+            document.getElementById('finalCost').value = warranty.finalCost;
+            document.getElementById('startDate').value = warranty.startDate;
+            
+            editingId = id;
+            document.getElementById('submitBtn').innerHTML = '<i class="fas fa-save"></i> به‌روزرسانی گارانتی';
+            
+            // اسکرول به بالای فرم
+            document.getElementById('customerName').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // حذف گارانتی
+        function deleteWarranty(id) {
+            if (confirm('آیا از حذف این گارانتی مطمئن هستید؟')) {
+                warranties = warranties.filter(w => w.id !== id);
+                localStorage.setItem('warranties', JSON.stringify(warranties));
+                displayWarranties();
+                
+                // اگر در حال نمایش نتایج جستجو هستیم، آن را نیز به‌روزرسانی کنیم
+                const searchTerm = document.getElementById('searchInput').value;
+                if (searchTerm) {
+                    searchWarranties();
+                }
+            }
+        }
+        
+        // جستجوی گارانتی
+        function searchWarranties() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            if (!searchTerm) {
+                document.getElementById('searchResults').innerHTML = '';
+                return;
+            }
+            
+            const filteredWarranties = warranties.filter(w => 
+                w.customerName.toLowerCase().includes(searchTerm) || 
+                w.productName.toLowerCase().includes(searchTerm) ||
+                w.serialNumber.toLowerCase().includes(searchTerm) ||
+                w.warrantyCode.toLowerCase().includes(searchTerm)
+            );
+            
+            displaySearchResults(filteredWarranties);
+        }
+        
+        // فیلتر گارانتی‌های نزدیک به انقضا
+        function showExpiringWarranties() {
+            const expiringWarranties = warranties.filter(w => {
+                const remainingDays = calculateRemainingDays(w.startDate, w.warrantyPeriod);
+                return remainingDays <= 30 && remainingDays > 0;
+            });
+            
+            document.getElementById('searchInput').value = '';
+            document.getElementById('searchResults').innerHTML = '';
+            displayWarranties(expiringWarranties);
+        }
+        
+        // فیلتر گارانتی‌های منقضی شده
+        function showExpiredWarranties() {
+            const expiredWarranties = warranties.filter(w => {
+                const remainingDays = calculateRemainingDays(w.startDate, w.warrantyPeriod);
+                return remainingDays === 0;
+            });
+            
+            document.getElementById('searchInput').value = '';
+            document.getElementById('searchResults').innerHTML = '';
+            displayWarranties(expiredWarranties);
+        }
+        
+        // تنظیم تاریخ پیش‌فرض به امروز
+        document.getElementById('startDate').valueAsDate = new Date();
+        
+        // رویدادهای صفحه
+        document.getElementById('warrantyForm').addEventListener('submit', saveWarranty);
+        document.getElementById('searchBtn').addEventListener('click', searchWarranties);
+        document.getElementById('searchInput').addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                searchWarranties();
+            } else {
+                // جستجوی لحظه‌ای
+                searchWarranties();
+            }
+        });
+        
+        document.getElementById('showExpiring').addEventListener('click', showExpiringWarranties);
+        document.getElementById('showExpired').addEventListener('click', showExpiredWarranties);
+        document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+        
+        // به روز رسانی زمان هر ثانیه
+        setInterval(updateDateTime, 1000);
+        updateDateTime();
+        
+        // نمایش اولیه گارانتی‌ها
+        displayWarranties();
+    </script>
+</body>
+</html>
