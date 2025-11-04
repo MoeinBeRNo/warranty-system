@@ -6,7 +6,15 @@
     <title>سیستم مدیریت گارانتی | BeRNo</title>
     <link href="https://fonts.googleapis.com/css2?family=Lalezar&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- اضافه کردن Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    
     <style>
+        /* تمام استایل‌های قبلی رو اینجا کپی کن */
+        /* همون استایل‌هایی که قبلاً داشتی */
+        
         * {
             box-sizing: border-box;
             margin: 0;
@@ -33,554 +41,8 @@
             --footer-text: #e2e8f0;
         }
         
-        .dark-theme {
-            --primary: #6d8eff;
-            --secondary: #5e35b1;
-            --accent: #4cc9f0;
-            --light: #2d3748;
-            --dark: #e2e8f0;
-            --success: #68d391;
-            --warning: #faf089;
-            --danger: #fc8181;
-            --gray: #a0aec0;
-            --card-bg: rgba(45, 55, 72, 0.9);
-            --text-color: #e2e8f0;
-            --bg-color: #1a202c;
-            --header-bg: #2d3748;
-            --input-bg: #2d3748;
-            --border-color: #4a5568;
-            --footer-bg: #1a202c;
-            --footer-text: #a0aec0;
-        }
+        /* بقیه استایل‌ها رو همونطور که داشتی بیار */
         
-        body {
-            font-family: 'Lalezar', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: var(--text-color);
-            padding: 20px;
-            line-height: 1.6;
-            min-height: 100vh;
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        body.dark-theme {
-            background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            width: 100%;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding: 25px;
-            background: var(--header-bg);
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            position: relative;
-        }
-        
-        h1 {
-            color: var(--primary);
-            margin-bottom: 10px;
-            font-size: 2.5rem;
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
-            font-weight: bold;
-        }
-        
-        .header-info {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 30px;
-            margin-top: 15px;
-            font-size: 1.1rem;
-        }
-        
-        .header-info span {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(67, 97, 238, 0.1);
-            padding: 8px 15px;
-            border-radius: 50px;
-            color: var(--primary);
-        }
-        
-        .theme-toggle {
-            position: absolute;
-            left: 25px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s;
-        }
-        
-        .theme-toggle:hover {
-            transform: translateY(-50%) scale(1.1);
-        }
-        
-        .main-content {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 25px;
-            margin-bottom: 30px;
-            flex: 1;
-        }
-        
-        @media (max-width: 768px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
-            
-            .theme-toggle {
-                position: relative;
-                left: 0;
-                top: 0;
-                transform: none;
-                margin: 10px auto;
-            }
-            
-            .header-info {
-                flex-direction: column;
-                gap: 15px;
-            }
-        }
-        
-        .card {
-            background: var(--card-bg);
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-        }
-        
-        h2 {
-            color: var(--primary);
-            margin-bottom: 20px;
-            font-size: 1.6rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid rgba(67, 97, 238, 0.2);
-            font-weight: bold;
-        }
-        
-        .form-group {
-            margin-bottom: 18px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--text-color);
-            font-size: 1.1rem;
-            font-weight: bold;
-        }
-        
-        input, select, textarea {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid var(--border-color);
-            border-radius: 10px;
-            background-color: var(--input-bg);
-            color: var(--text-color);
-            font-family: 'Lalezar', sans-serif;
-            font-size: 1rem;
-            transition: all 0.3s;
-        }
-        
-        input:focus, select:focus, textarea:focus {
-            border-color: var(--primary);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
-        }
-        
-        button {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            border: none;
-            padding: 14px 20px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-family: 'Lalezar', sans-serif;
-            font-size: 1.1rem;
-            transition: all 0.3s;
-            width: 100%;
-            margin-top: 10px;
-            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
-            font-weight: bold;
-        }
-        
-        button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 7px 20px rgba(67, 97, 238, 0.4);
-        }
-        
-        .btn-danger {
-            background: linear-gradient(135deg, var(--danger), #c82333);
-        }
-        
-        .btn-danger:hover {
-            box-shadow: 0 7px 20px rgba(220, 53, 69, 0.4);
-        }
-        
-        .btn-edit {
-            background: linear-gradient(135deg, var(--accent), #0096c7);
-        }
-        
-        .btn-edit:hover {
-            box-shadow: 0 7px 20px rgba(76, 201, 240, 0.4);
-        }
-        
-        .btn-warning {
-            background: linear-gradient(135deg, var(--warning), #e68a00);
-        }
-        
-        .btn-success {
-            background: linear-gradient(135deg, var(--success), #2e8b57);
-        }
-        
-        .sync-section {
-            background: var(--card-bg);
-            border-radius: 15px;
-            padding: 20px;
-            margin: 15px 0;
-            border: 2px dashed var(--primary);
-        }
-        
-        .sync-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 15px;
-        }
-        
-        .sync-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin: 10px 0;
-            padding: 10px;
-            background: rgba(67, 97, 238, 0.1);
-            border-radius: 10px;
-        }
-        
-        .status-indicator {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            margin-left: 10px;
-        }
-        
-        .status-online { background: var(--success); }
-        .status-offline { background: var(--danger); }
-        .status-syncing { background: var(--warning); }
-        
-        .warranty-list {
-            max-height: 600px;
-            overflow-y: auto;
-            padding-right: 10px;
-            flex: 1;
-        }
-        
-        .warranty-list::-webkit-scrollbar {
-            width: 8px;
-        }
-        
-        .warranty-list::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-        
-        .warranty-list::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 10px;
-        }
-        
-        .dark-theme .warranty-list::-webkit-scrollbar-track {
-            background: #2d3748;
-        }
-        
-        .warranty-item {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-right: 5px solid var(--primary);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s;
-        }
-        
-        .warranty-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        }
-        
-        .warranty-item.expiring {
-            border-right-color: var(--warning);
-        }
-        
-        .warranty-item.expired {
-            border-right-color: var(--danger);
-        }
-        
-        .warranty-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        
-        .warranty-title {
-            font-size: 1.3rem;
-            color: var(--primary);
-            font-weight: bold;
-        }
-        
-        .warranty-days {
-            font-size: 1rem;
-            padding: 6px 12px;
-            border-radius: 20px;
-            background: rgba(67, 97, 238, 0.1);
-            font-weight: bold;
-        }
-        
-        .days-normal {
-            color: var(--success);
-        }
-        
-        .days-warning {
-            color: var(--warning);
-        }
-        
-        .days-danger {
-            color: var(--danger);
-        }
-        
-        .warranty-details {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 12px;
-        }
-        
-        .warranty-details div {
-            font-weight: normal;
-        }
-        
-        .warranty-cost {
-            background: rgba(75, 181, 67, 0.1);
-            padding: 10px;
-            border-radius: 8px;
-            margin: 10px 0;
-            font-weight: bold;
-            color: var(--success);
-        }
-        
-        .warranty-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-        
-        .warranty-actions button {
-            flex: 1;
-            padding: 10px;
-            font-size: 0.95rem;
-            margin-top: 0;
-        }
-        
-        .search-box {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        
-        .search-box input {
-            flex: 1;
-        }
-        
-        .search-box button {
-            width: auto;
-            padding: 12px 20px;
-        }
-        
-        .search-results {
-            margin-top: 20px;
-            max-height: 400px;
-            overflow-y: auto;
-            flex: 1;
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--gray);
-        }
-        
-        .empty-state i {
-            font-size: 4rem;
-            margin-bottom: 20px;
-            color: #ced4da;
-        }
-        
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-        
-        .stat-card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        }
-        
-        .stat-value {
-            font-size: 2rem;
-            font-weight: bold;
-            color: var(--primary);
-            margin: 10px 0;
-        }
-        
-        .stat-label {
-            color: var(--gray);
-            font-size: 0.9rem;
-            font-weight: bold;
-        }
-        
-        .cost-input {
-            position: relative;
-        }
-        
-        .cost-input::after {
-            content: "تومان";
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--gray);
-            background: var(--input-bg);
-            padding: 0 8px;
-        }
-        
-        .cost-input input {
-            padding-left: 70px;
-        }
-        
-        .filter-buttons {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        
-        .filter-buttons button {
-            flex: 1;
-            margin-top: 0;
-            padding: 10px;
-            font-size: 0.9rem;
-        }
-        
-        .service-details {
-            font-weight: normal !important;
-        }
-        
-        footer {
-            background: var(--footer-bg);
-            color: var(--footer-text);
-            padding: 20px;
-            border-radius: 15px;
-            margin-top: 30px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .footer-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        .footer-logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
-        
-        .footer-logo i {
-            color: var(--primary);
-        }
-        
-        .footer-text {
-            font-size: 0.9rem;
-            opacity: 0.8;
-        }
-        
-        .footer-links {
-            display: flex;
-            gap: 15px;
-        }
-        
-        .footer-links a {
-            color: var(--footer-text);
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-        
-        .footer-links a:hover {
-            color: var(--primary);
-        }
-        
-        @media (max-width: 768px) {
-            .footer-content {
-                flex-direction: column;
-                gap: 15px;
-            }
-            
-            .footer-links {
-                justify-content: center;
-            }
-            
-            .sync-buttons {
-                grid-template-columns: 1fr;
-            }
-        }
     </style>
 </head>
 <body class="light-theme">
@@ -596,7 +58,7 @@
                 <span id="currentTime"><i class="fas fa-clock"></i> ساعت: </span>
                 <span id="syncStatus">
                     <i class="fas fa-cloud"></i> وضعیت: 
-                    <span id="statusText">محلی</span>
+                    <span id="statusText">در حال اتصال...</span>
                     <span class="status-indicator status-offline" id="statusIndicator"></span>
                 </span>
             </div>
@@ -622,17 +84,11 @@
             <h2><i class="fas fa-sync-alt"></i> مدیریت داده‌ها و همگام‌سازی</h2>
             <div class="sync-info">
                 <i class="fas fa-info-circle"></i>
-                <span>برای دسترسی از دستگاه‌های مختلف، داده‌ها را export کرده و در دستگاه دیگر import کنید</span>
+                <span>داده‌ها به طور خودکار بین همه دستگاه‌ها همگام‌سازی می‌شوند</span>
             </div>
             <div class="sync-buttons">
                 <button class="btn-success" id="exportBtn">
                     <i class="fas fa-file-export"></i> خروجی گرفتن از داده‌ها
-                </button>
-                <button class="btn-success" id="importBtn">
-                    <i class="fas fa-file-import"></i> وارد کردن داده‌ها
-                </button>
-                <button class="btn-warning" id="autoBackupBtn">
-                    <i class="fas fa-robot"></i> پشتیبان‌گیری خودکار
                 </button>
                 <button class="btn-danger" id="resetDataBtn">
                     <i class="fas fa-trash"></i> ریست کردن همه داده‌ها
@@ -732,7 +188,7 @@
                     <span>BeRNo Personal Branding</span>
                 </div>
                 <div class="footer-text">
-                    © 1404 کلیه حقوق این نرم‌افزار محفوظ و متعلق به BeRNo Personal Branding می‌باشد. v 1.40
+                    © 1404 کلیه حقوق این نرم‌افزار محفوظ و متعلق به BeRNo Personal Branding می‌باشد. v 2.0
                 </div>
                 <div class="footer-links">
                     <a href="#"><i class="fas fa-info-circle"></i> درباره ما</a>
@@ -743,12 +199,29 @@
         </footer>
     </div>
 
+    <!-- راه‌اندازی Firebase -->
+    <script>
+        // 🔥 اینجا کد پیکربندی Firebase رو قرار بده
+        const firebaseConfig = {
+            apiKey: "xxxxxxxxxxxxxxxxxxxxxxx",
+            authDomain: "warranty-system-berno.firebaseapp.com",
+            databaseURL: "https://warranty-system-berno-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "warranty-system-berno",
+            storageBucket: "warranty-system-berno.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "xxxxxxxxxxxxxxxxxxxxxxx"
+        };
+
+        // راه‌اندازی Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+    </script>
+
     <script>
         // متغیرهای جهانی
-        let warranties = JSON.parse(localStorage.getItem('warranties')) || [];
+        let warranties = [];
         let editingId = null;
         let isDarkTheme = localStorage.getItem('darkTheme') === 'true';
-        let autoBackupInterval = null;
         
         // اعمال تم ذخیره شده
         if (isDarkTheme) {
@@ -798,19 +271,19 @@
         }
         
         // به روز رسانی وضعیت همگام‌سازی
-        function updateSyncStatus() {
-            const hasData = warranties.length > 0;
-            const lastBackup = localStorage.getItem('lastBackup');
+        function updateSyncStatus(status) {
+            const statusText = document.getElementById('statusText');
+            const indicator = document.getElementById('statusIndicator');
             
-            if (lastBackup) {
-                document.getElementById('statusText').textContent = 'پشتیبان‌گیری شده';
-                document.getElementById('statusIndicator').className = 'status-indicator status-online';
-            } else if (hasData) {
-                document.getElementById('statusText').textContent = 'داده محلی';
-                document.getElementById('statusIndicator').className = 'status-indicator status-warning';
+            if (status === 'connected') {
+                statusText.textContent = 'همگام‌سازی شده';
+                indicator.className = 'status-indicator status-online';
+            } else if (status === 'syncing') {
+                statusText.textContent = 'در حال همگام‌سازی';
+                indicator.className = 'status-indicator status-syncing';
             } else {
-                document.getElementById('statusText').textContent = 'بدون داده';
-                document.getElementById('statusIndicator').className = 'status-indicator status-offline';
+                statusText.textContent = 'آفلاین';
+                indicator.className = 'status-indicator status-offline';
             }
         }
         
@@ -841,6 +314,52 @@
             document.getElementById('totalWarranties').textContent = total;
             document.getElementById('activeWarranties').textContent = active;
             document.getElementById('expiredWarranties').textContent = expired;
+        }
+        
+        // 🔥 تابع جدید: بارگذاری داده‌ها از Firebase
+        function loadWarrantiesFromFirebase() {
+            updateSyncStatus('syncing');
+            
+            database.ref('warranties').on('value', (snapshot) => {
+                const data = snapshot.val();
+                warranties = [];
+                
+                if (data) {
+                    Object.keys(data).forEach(key => {
+                        warranties.push({
+                            id: key,
+                            ...data[key]
+                        });
+                    });
+                }
+                
+                displayWarranties();
+                updateSyncStatus('connected');
+                showMessage('داده‌ها با موفقیت بارگذاری شدند');
+            }, (error) => {
+                updateSyncStatus('offline');
+                showMessage('خطا در بارگذاری داده‌ها: ' + error.message, 'error');
+            });
+        }
+        
+        // 🔥 تابع جدید: ذخیره در Firebase
+        function saveWarrantyToFirebase(warrantyData, warrantyId = null) {
+            updateSyncStatus('syncing');
+            
+            const warrantyRef = warrantyId ? 
+                database.ref('warranties/' + warrantyId) : 
+                database.ref('warranties').push();
+            
+            return warrantyRef.set(warrantyData)
+                .then(() => {
+                    updateSyncStatus('connected');
+                    return true;
+                })
+                .catch((error) => {
+                    updateSyncStatus('offline');
+                    showMessage('خطا در ذخیره‌سازی: ' + error.message, 'error');
+                    return false;
+                });
         }
         
         // نمایش گارانتی‌ها در لیست
@@ -903,7 +422,6 @@
             });
             
             updateStats();
-            updateSyncStatus();
         }
         
         // نمایش نتایج جستجو
@@ -967,7 +485,7 @@
         }
         
         // ذخیره گارانتی
-        function saveWarranty(event) {
+        async function saveWarranty(event) {
             event.preventDefault();
             
             const customerName = document.getElementById('customerName').value;
@@ -979,52 +497,26 @@
             const finalCost = document.getElementById('finalCost').value;
             const startDate = document.getElementById('startDate').value;
             
-            if (editingId) {
-                // ویرایش گارانتی موجود
-                const index = warranties.findIndex(w => w.id === editingId);
-                if (index !== -1) {
-                    warranties[index] = {
-                        id: editingId,
-                        customerName,
-                        productName,
-                        serialNumber,
-                        warrantyCode,
-                        serviceDetails,
-                        warrantyPeriod,
-                        finalCost,
-                        startDate
-                    };
-                }
+            const warrantyData = {
+                customerName,
+                productName,
+                serialNumber,
+                warrantyCode,
+                serviceDetails,
+                warrantyPeriod,
+                finalCost,
+                startDate
+            };
+            
+            const success = await saveWarrantyToFirebase(warrantyData, editingId);
+            
+            if (success) {
+                showMessage('گارانتی با موفقیت ذخیره شد');
+                document.getElementById('warrantyForm').reset();
+                document.getElementById('startDate').valueAsDate = new Date();
                 editingId = null;
                 document.getElementById('submitBtn').innerHTML = '<i class="fas fa-save"></i> ذخیره گارانتی';
-            } else {
-                // افزودن گارانتی جدید
-                const newWarranty = {
-                    id: generateId(),
-                    customerName,
-                    productName,
-                    serialNumber,
-                    warrantyCode,
-                    serviceDetails,
-                    warrantyPeriod,
-                    finalCost,
-                    startDate
-                };
-                
-                warranties.push(newWarranty);
             }
-            
-            // ذخیره در localStorage
-            localStorage.setItem('warranties', JSON.stringify(warranties));
-            
-            // نمایش مجدد لیست
-            displayWarranties();
-            
-            // پاک کردن فرم
-            document.getElementById('warrantyForm').reset();
-            document.getElementById('startDate').valueAsDate = new Date();
-            
-            showMessage('گارانتی با موفقیت ذخیره شد');
         }
         
         // ویرایش گارانتی
@@ -1044,24 +536,19 @@
             editingId = id;
             document.getElementById('submitBtn').innerHTML = '<i class="fas fa-save"></i> به‌روزرسانی گارانتی';
             
-            // اسکرول به بالای فرم
             document.getElementById('customerName').scrollIntoView({ behavior: 'smooth' });
         }
         
         // حذف گارانتی
         function deleteWarranty(id) {
             if (confirm('آیا از حذف این گارانتی مطمئن هستید؟')) {
-                warranties = warranties.filter(w => w.id !== id);
-                localStorage.setItem('warranties', JSON.stringify(warranties));
-                displayWarranties();
-                
-                // اگر در حال نمایش نتایج جستجو هستیم، آن را نیز به‌روزرسانی کنیم
-                const searchTerm = document.getElementById('searchInput').value;
-                if (searchTerm) {
-                    searchWarranties();
-                }
-                
-                showMessage('گارانتی با موفقیت حذف شد');
+                database.ref('warranties/' + id).remove()
+                    .then(() => {
+                        showMessage('گارانتی با موفقیت حذف شد');
+                    })
+                    .catch((error) => {
+                        showMessage('خطا در حذف گارانتی: ' + error.message, 'error');
+                    });
             }
         }
         
@@ -1108,8 +595,6 @@
             displayWarranties(expiredWarranties);
         }
         
-        // ==================== توابع همگام‌سازی ====================
-        
         // خروجی گرفتن از داده‌ها
         function exportData() {
             if (warranties.length === 0) {
@@ -1120,7 +605,7 @@
             const data = {
                 warranties: warranties,
                 exportDate: new Date().toISOString(),
-                version: "1.0",
+                version: "2.0",
                 totalRecords: warranties.length
             };
             
@@ -1135,63 +620,20 @@
             showMessage(`داده‌ها با موفقیت ذخیره شدند (${warranties.length} رکورد)`);
         }
         
-        // وارد کردن داده‌ها
-        function importData(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    if (data.warranties && Array.isArray(data.warranties)) {
-                        if (confirm(`آیا از جایگزینی داده‌های فعلی با ${data.warranties.length} رکورد جدید مطمئن هستید؟`)) {
-                            warranties = data.warranties;
-                            localStorage.setItem('warranties', JSON.stringify(warranties));
-                            displayWarranties();
-                            showMessage(`داده‌ها با موفقیت وارد شدند (${data.warranties.length} رکورد)`);
-                        }
-                    } else {
-                        throw new Error('قالب فایل نامعتبر است');
-                    }
-                } catch (error) {
-                    showMessage('خطا در خواندن فایل: ' + error.message, 'error');
-                }
-            };
-            reader.readAsText(file);
-        }
-        
-        // پشتیبان‌گیری خودکار
-        function toggleAutoBackup() {
-            if (autoBackupInterval) {
-                clearInterval(autoBackupInterval);
-                autoBackupInterval = null;
-                document.getElementById('autoBackupBtn').innerHTML = '<i class="fas fa-robot"></i> پشتیبان‌گیری خودکار';
-                showMessage('پشتیبان‌گیری خودکار غیرفعال شد');
-            } else {
-                autoBackupInterval = setInterval(() => {
-                    localStorage.setItem('lastBackup', new Date().toISOString());
-                    showMessage('پشتیبان‌گیری خودکار انجام شد');
-                }, 300000); // هر 5 دقیقه
-                
-                document.getElementById('autoBackupBtn').innerHTML = '<i class="fas fa-stop"></i> توقف پشتیبان‌گیری';
-                showMessage('پشتیبان‌گیری خودکار فعال شد (هر 5 دقیقه)');
-            }
-        }
-        
         // ریست کردن همه داده‌ها
         function resetAllData() {
             if (confirm('آیا از حذف تمامی داده‌ها مطمئن هستید؟ این عمل غیرقابل برگشت است!')) {
-                warranties = [];
-                localStorage.removeItem('warranties');
-                displayWarranties();
-                showMessage('تمامی داده‌ها با موفقیت حذف شدند');
+                database.ref('warranties').remove()
+                    .then(() => {
+                        showMessage('تمامی داده‌ها با موفقیت حذف شدند');
+                    })
+                    .catch((error) => {
+                        showMessage('خطا در حذف داده‌ها: ' + error.message, 'error');
+                    });
             }
         }
         
-        // ==================== راه‌اندازی اولیه ====================
-        
-        // تنظیم تاریخ پیش‌فرض به امروز
+        // راه‌اندازی اولیه
         document.getElementById('startDate').valueAsDate = new Date();
         
         // رویدادهای صفحه
@@ -1200,36 +642,21 @@
         document.getElementById('searchInput').addEventListener('keyup', function(event) {
             if (event.key === 'Enter') {
                 searchWarranties();
-            } else {
-                // جستجوی لحظه‌ای
-                searchWarranties();
             }
         });
         
         document.getElementById('showExpiring').addEventListener('click', showExpiringWarranties);
         document.getElementById('showExpired').addEventListener('click', showExpiredWarranties);
         document.getElementById('themeToggle').addEventListener('click', toggleTheme);
-        
-        // رویدادهای همگام‌سازی
         document.getElementById('exportBtn').addEventListener('click', exportData);
-        document.getElementById('autoBackupBtn').addEventListener('click', toggleAutoBackup);
         document.getElementById('resetDataBtn').addEventListener('click', resetAllData);
-        
-        const importInput = document.createElement('input');
-        importInput.type = 'file';
-        importInput.accept = '.json';
-        importInput.style.display = 'none';
-        importInput.addEventListener('change', importData);
-        document.body.appendChild(importInput);
-        
-        document.getElementById('importBtn').addEventListener('click', () => importInput.click());
         
         // به روز رسانی زمان هر ثانیه
         setInterval(updateDateTime, 1000);
         updateDateTime();
-                        
-        // نمایش اولیه گارانتی‌ها
-        displayWarranties();
+        
+        // بارگذاری اولیه داده‌ها از Firebase
+        loadWarrantiesFromFirebase();
     </script>
 </body>
 </html>
